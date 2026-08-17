@@ -23,6 +23,7 @@ import { PokerTable } from "@/components/table/PokerTable";
 import { ActionBar } from "@/components/table/ActionBar";
 import { SitModal } from "./SitModal";
 import { Overlay } from "./Overlay";
+import { TopNav } from "@/components/ui/TopNav";
 import { SidePanel, type LogRow, type ChatRow } from "./SidePanel";
 
 interface LastResult {
@@ -424,6 +425,7 @@ function RoomHeader({ code, name, status, isHost, onPause }: { code: string; nam
             {status === "paused" ? "Resume" : "Pause"}
           </button>
         )}
+        <TopNav />
       </div>
     </header>
   );

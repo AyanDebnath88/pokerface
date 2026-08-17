@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { PokerTable } from "@/components/table/PokerTable";
 import { ActionBar } from "@/components/table/ActionBar";
+import { TopNav } from "@/components/ui/TopNav";
 import type { TableView } from "@/lib/game/view";
 import type { LegalActions } from "@/lib/engine/betting";
 
@@ -134,9 +135,7 @@ export default function DemoPage() {
         <Link href="/" className="font-display text-lg tracking-wide text-gilt">
           PokerFace
         </Link>
-        <div className="rounded-full px-4 py-1.5 text-xs text-parchment/80 bg-black/25 backdrop-blur-sm">
-          Table preview
-        </div>
+        <TopNav />
       </header>
 
       <section className="flex-1 flex flex-col items-center justify-center gap-8 px-4 pb-10">

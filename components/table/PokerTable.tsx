@@ -4,7 +4,6 @@ import type { TableView } from "@/lib/game/view";
 import { VARIANT_LABEL, formatChips } from "@/lib/game/view";
 import { SeatPod } from "./SeatPod";
 import { CommunityBoard } from "./CommunityBoard";
-import { ChipStack } from "./ChipStack";
 
 // Seat positions (%) around an ellipse. Index 0 = bottom (viewer). Radii are
 // larger than the felt so pods sit in the dark ring around the lit table.
@@ -13,16 +12,11 @@ function seatPositions(count: number): { x: number; y: number }[] {
   for (let i = 0; i < count; i++) {
     const angle = Math.PI / 2 + (i / count) * Math.PI * 2;
     out.push({
-      x: 50 + 47 * Math.cos(angle),
+      x: 50 + 48 * Math.cos(angle),
       y: 50 + 45 * Math.sin(angle),
     });
   }
   return out;
-}
-
-// Bet chips sit just inside the felt rim, between the seat and the pot.
-function betPosition(x: number, y: number) {
-  return { x: 50 + (x - 50) * 0.6, y: 50 + (y - 50) * 0.6 };
 }
 
 export function PokerTable({
@@ -39,8 +33,8 @@ export function PokerTable({
   return (
     <div className="w-full px-10 sm:px-16 lg:px-20">
       <div className="relative w-full max-w-4xl mx-auto aspect-[10/11] sm:aspect-[16/11]">
-        {/* Felt — a lit island */}
-        <div className="felt absolute inset-[17%] rounded-[46%]">
+        {/* Felt — a lit island (narrower than the seat ring so pods clear it) */}
+        <div className="felt absolute top-[15%] bottom-[15%] left-[26%] right-[26%] rounded-[46%]">
           <div className="absolute inset-0 grid place-items-center">
             <div className="font-display text-sm tracking-[0.4em] text-gold-500/12 uppercase translate-y-16">
               PokerFace
@@ -61,21 +55,6 @@ export function PokerTable({
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
           <CommunityBoard board={view.board} pot={view.pot} />
         </div>
-
-        {/* Bet chips */}
-        {view.seats.map((seat, i) => {
-          if (!seat.playerId || seat.committed <= 0) return null;
-          const bp = betPosition(positions[i].x, positions[i].y);
-          return (
-            <div
-              key={`bet-${i}`}
-              className="absolute z-20"
-              style={{ left: `${bp.x}%`, top: `${bp.y}%`, transform: "translate(-50%,-50%)" }}
-            >
-              <ChipStack amount={seat.committed} />
-            </div>
-          );
-        })}
 
         {/* Seats */}
         {view.seats.map((seat, i) => (

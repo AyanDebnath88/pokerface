@@ -25,9 +25,9 @@ export function ActionBar({
     Math.max(raiseFloor, Math.min(legal.maxTo, Math.round(v)));
 
   return (
-    <div className="glass-strong rounded-2xl p-3 flex flex-col gap-3 w-full max-w-xl">
+    <div className="glass-strong rounded-xl p-2 flex flex-col gap-2 w-full max-w-lg">
       {(legal.canBet || legal.canRaise) && (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <input
             type="range"
             min={raiseFloor}
@@ -38,11 +38,12 @@ export function ActionBar({
             onChange={(e) => setAmount(clamp(Number(e.target.value)))}
             className="flex-1 accent-[var(--gold-500)]"
           />
-          <div className="glass rounded-lg px-3 py-1.5 text-sm tabular-nums text-gold-100 min-w-24 text-center">
+          <div className="glass rounded-md px-2 py-1 text-xs tabular-nums text-gold-100 min-w-16 text-center">
             {formatChips(amount)}
           </div>
           <div className="flex gap-1">
             {[
+              { label: "Min", v: () => raiseFloor },
               { label: "½", v: () => clamp(legal.maxTo * 0.5) },
               { label: "¾", v: () => clamp(legal.maxTo * 0.75) },
               { label: "Pot", v: () => legal.maxTo },
@@ -52,7 +53,7 @@ export function ActionBar({
                 key={b.label}
                 disabled={disabled}
                 onClick={() => setAmount(b.v())}
-                className="btn-ghost rounded-lg px-2.5 py-1.5 text-xs"
+                className="btn-ghost rounded-md px-2 py-1 text-[11px]"
               >
                 {b.label}
               </button>
@@ -61,12 +62,12 @@ export function ActionBar({
         </div>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex gap-1.5">
         {legal.canFold && (
           <button
             disabled={disabled}
             onClick={() => act("fold")}
-            className="btn-ghost rounded-xl px-5 py-3 flex-1 font-medium text-danger/90 border-danger/30"
+            className="btn-ghost rounded-lg px-4 py-2 flex-1 text-sm font-medium text-danger/90 border-danger/30"
           >
             Fold
           </button>
@@ -75,7 +76,7 @@ export function ActionBar({
           <button
             disabled={disabled}
             onClick={() => act("check")}
-            className="btn-ghost rounded-xl px-5 py-3 flex-1 font-medium"
+            className="btn-ghost rounded-lg px-4 py-2 flex-1 text-sm font-medium"
           >
             Check
           </button>
@@ -84,7 +85,7 @@ export function ActionBar({
             <button
               disabled={disabled}
               onClick={() => act("call")}
-              className="btn-ghost rounded-xl px-5 py-3 flex-1 font-medium"
+              className="btn-ghost rounded-lg px-4 py-2 flex-1 text-sm font-medium"
             >
               Call {formatChips(legal.callAmount)}
             </button>
@@ -96,7 +97,7 @@ export function ActionBar({
             onClick={() =>
               act(legal.canBet ? "bet" : "raise", amount)
             }
-            className="btn-gold rounded-xl px-5 py-3 flex-1"
+            className="btn-gold rounded-lg px-4 py-2 flex-1 text-sm"
           >
             {legal.canBet ? "Bet" : "Raise to"} {formatChips(amount)}
           </button>

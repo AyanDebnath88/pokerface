@@ -210,6 +210,42 @@ describe("UTG straddle", () => {
   });
 });
 
+describe("run it twice", () => {
+  it("splits the pot across two boards when heads-up all-in", () => {
+    // Heads-up all-in preflop, board run twice.
+    // a = AA, b = KK. Run 1 board misses; run 2 board pairs b's kings.
+    const deck = [
+      "Ah", "Kh", // round 1: a, b
+      "Ad", "Kd", // round 2: a, b
+      "2c", "7s", "9d", "3h", "4s", // run 1 board → a (AA) wins
+      "Kc", "2h", "5s", "6d", "8c", // run 2 board → b (set of kings) wins
+    ];
+    let s = startHand({
+      variant: "nlhe",
+      players: [
+        { playerId: "a", stack: 1000 },
+        { playerId: "b", stack: 1000 },
+      ],
+      buttonIndex: 0,
+      smallBlind: 5,
+      bigBlind: 10,
+      runItTwiceTimes: 2,
+      deck,
+    });
+    // a (button/SB) shoves, b calls all-in.
+    s = applyAction(s, "a", { type: "raise", to: 1000 });
+    s = applyAction(s, "b", { type: "call" });
+
+    expect(s.status).toBe("complete");
+    expect(s.result!.runs).toHaveLength(2);
+    // Pot 2000 split: a wins run 1 (1000), b wins run 2 (1000).
+    expect(stackOf(s, "a")).toBe(1000);
+    expect(stackOf(s, "b")).toBe(1000);
+    expect(s.result!.winnings.get("a")).toBe(1000);
+    expect(s.result!.winnings.get("b")).toBe(1000);
+  });
+});
+
 describe("pot-limit Omaha betting cap", () => {
   it("caps a pot-sized raise correctly preflop", () => {
     const s = startHand(

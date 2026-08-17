@@ -53,6 +53,10 @@ export interface ActResult {
   shown?: Record<string, string>;
   /** userId -> revealed hole cards, at showdown. */
   shownCards?: Record<string, Card[]>;
+  /** The full would-be board when a hand ends early (rabbit hunting). */
+  rabbitBoard?: Card[];
+  /** Boards used when the hand ran more than once. */
+  runs?: { board: Card[] }[];
 }
 
 /** Pick the next button seat: first occupied seat strictly after `prev`. */
@@ -88,6 +92,7 @@ export function dealHand(
     smallBlind: blinds.smallBlind,
     bigBlind: blinds.bigBlind,
     ante: blinds.ante,
+    runItTwiceTimes: config.runItTwice === "always" ? 2 : 1,
     deck: shuffledDeck(),
   });
 
@@ -197,6 +202,17 @@ export function act(
     result.winnings = winnings;
     result.shown = shown;
     result.shownCards = shownCards;
+
+    if (after.result.runs && after.result.runs.length > 1) {
+      result.runs = after.result.runs;
+    }
+
+    // Rabbit hunting: reveal the board that would have come if the hand
+    // ended before the river. Purely informational.
+    if (config.rabbitHunting && after.board.length < 5 && !result.runs) {
+      const need = 5 - after.board.length;
+      result.rabbitBoard = [...after.board, ...after.deck.slice(0, need)];
+    }
   }
 
   return result;

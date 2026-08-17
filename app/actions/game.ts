@@ -521,6 +521,8 @@ async function applyActionInternal(
       shown: r.shown,
       shownCards: r.shownCards,
       board: r.publicHand.board,
+      rabbitBoard: r.rabbitBoard,
+      runs: r.runs,
     };
   }
 
@@ -548,7 +550,7 @@ async function applyActionInternal(
       .update({
         board: r.publicHand.board,
         street: "showdown",
-        result: { winnings: r.winnings, shown: r.shown, shownCards: r.shownCards },
+        result: { winnings: r.winnings, shown: r.shown, shownCards: r.shownCards, rabbitBoard: r.rabbitBoard, runs: r.runs },
         ended_at: new Date().toISOString(),
       })
       .eq("id", game.current_hand_id!);

@@ -25,6 +25,8 @@ export interface HandConfig {
   ante?: number;
   /** UTG posts a live 2×BB straddle; action starts left of the straddle. */
   straddle?: boolean;
+  /** Run the board N times when all-in with the board incomplete (default 1). */
+  runItTwiceTimes?: number;
   /** Optional pre-shuffled deck for deterministic tests. */
   deck?: Card[];
 }
@@ -35,6 +37,8 @@ export interface HandResult {
   /** playerId -> comparable hand score, for those who reached showdown. */
   scores: Map<string, number>;
   wentToShowdown: boolean;
+  /** Boards used, when the hand was run more than once. */
+  runs?: { board: Card[] }[];
 }
 
 export interface HandState {
@@ -49,6 +53,7 @@ export interface HandState {
   toAct: number | null; // index into seats, or null when the hand is over
   currentBet: number; // highest committed on this street
   minRaise: number; // minimum legal raise increment
+  runItTwiceTimes: number; // 1 = normal; >1 runs the board N times when all-in
   status: "betting" | "complete";
   result?: HandResult;
 }
@@ -128,6 +133,7 @@ export function startHand(config: HandConfig): HandState {
     toAct: null,
     currentBet: 0,
     minRaise: config.bigBlind,
+    runItTwiceTimes: Math.max(1, config.runItTwiceTimes ?? 1),
     status: "betting",
   };
 
@@ -331,6 +337,18 @@ function advance(s: HandState) {
     // else: nobody left to act (all remaining all-in) → run it out.
   }
 
+  // All-in run-out with the board incomplete and >1 player contesting:
+  // optionally run the remaining board multiple times.
+  if (
+    s.runItTwiceTimes > 1 &&
+    playersAbleToAct(s) <= 1 &&
+    activeSeats(s).length >= 2 &&
+    s.street !== "river"
+  ) {
+    endHandMultiRun(s, s.runItTwiceTimes);
+    return;
+  }
+
   // Betting round finished. Deal streets until either a live betting round
   // is possible again (≥2 players can act) or we reach showdown.
   while (true) {
@@ -437,6 +455,69 @@ function endHand(s: HandState, showdown: boolean) {
   s.status = "complete";
   s.toAct = null;
   s.result = { winnings, pots, scores, wentToShowdown: showdown };
+}
+
+/** Odd-chip-safe split of a pot amount into the i-th of `times` runs. */
+function splitAmount(amount: number, times: number, i: number): number {
+  return Math.floor(amount / times) + (i < amount % times ? 1 : 0);
+}
+
+/**
+ * Settle an all-in hand by running the remaining board `times` times, splitting
+ * every pot evenly across the runs. Chip-conserving (odd chips distributed).
+ */
+function endHandMultiRun(s: HandState, times: number) {
+  const contributions: Contribution[] = s.seats.map((p) => ({
+    playerId: p.playerId,
+    amount: p.totalCommitted,
+    folded: p.folded,
+  }));
+  const pots = buildSidePots(contributions);
+
+  // Odd-chip order: seat order starting left of the button.
+  const order: string[] = [];
+  const n = s.seats.length;
+  for (let i = 1; i <= n; i++) {
+    order.push(s.seats[(s.buttonIndex + i) % n].playerId);
+  }
+
+  const need = 5 - s.board.length;
+  const winnings = new Map<string, number>();
+  const add = (id: string, v: number) =>
+    winnings.set(id, (winnings.get(id) ?? 0) + v);
+
+  const runs: { board: Card[] }[] = [];
+  let ptr = 0;
+  let run0Scores = new Map<string, number>();
+
+  for (let i = 0; i < times; i++) {
+    const board = [...s.board, ...s.deck.slice(ptr, ptr + need)];
+    ptr += need;
+    runs.push({ board });
+
+    const scores = new Map<string, number>();
+    for (const p of s.seats) {
+      if (!p.folded) {
+        scores.set(p.playerId, evaluateHand(s.variant, p.holeCards, board).score);
+      }
+    }
+    if (i === 0) run0Scores = scores;
+
+    const potsForRun = pots.map((p) => ({
+      amount: splitAmount(p.amount, times, i),
+      eligible: p.eligible,
+    }));
+    const runWin = awardPots(potsForRun, scores, order);
+    for (const [id, v] of runWin) add(id, v);
+  }
+
+  for (const p of s.seats) p.stack += winnings.get(p.playerId) ?? 0;
+
+  s.board = runs[0].board;
+  s.street = "showdown";
+  s.status = "complete";
+  s.toAct = null;
+  s.result = { winnings, pots, scores: run0Scores, wentToShowdown: true, runs };
 }
 
 // ---------------------------------------------------------------------------

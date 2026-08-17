@@ -3,13 +3,10 @@ import type { Card } from "@/lib/engine/types";
 
 type Size = "sm" | "md" | "lg";
 
-const SIZES: Record<
-  Size,
-  { box: string; rank: string; suit: string; watermark: string }
-> = {
-  sm: { box: "w-8 h-11 rounded-md", rank: "text-sm", suit: "text-[9px]", watermark: "text-lg" },
-  md: { box: "w-11 h-16 rounded-lg", rank: "text-xl", suit: "text-xs", watermark: "text-3xl" },
-  lg: { box: "w-16 h-24 rounded-xl", rank: "text-3xl", suit: "text-base", watermark: "text-5xl" },
+const SIZES: Record<Size, { box: string; rank: string; corner: string; pip: string }> = {
+  sm: { box: "w-8 h-11 rounded-md", rank: "text-[13px]", corner: "text-[8px]", pip: "text-lg" },
+  md: { box: "w-11 h-16 rounded-lg", rank: "text-lg", corner: "text-[11px]", pip: "text-2xl" },
+  lg: { box: "w-16 h-24 rounded-xl", rank: "text-2xl", corner: "text-sm", pip: "text-4xl" },
 };
 
 export function PlayingCard({
@@ -28,9 +25,9 @@ export function PlayingCard({
   if (faceDown || !card) {
     return (
       <div className={`card-back ${s.box} shrink-0 relative overflow-hidden`} aria-label="face-down card">
-        <div className="absolute inset-[3px] rounded-[4px] border border-gold-500/20" />
+        <div className="absolute inset-[3px] rounded-[4px] border border-gold-500/30" />
         <div className="absolute inset-0 grid place-items-center">
-          <span className="font-display text-gold-500/35 text-sm leading-none">♠</span>
+          <span className="font-display text-gold-300/60 text-sm leading-none">♠</span>
         </div>
       </div>
     );
@@ -38,7 +35,7 @@ export function PlayingCard({
 
   const suit = suitOf(card);
   const red = SUIT_IS_RED[suit];
-  const ink = red ? "#c02b38" : "#1a1c22";
+  const ink = red ? "#c8102e" : "#101216";
   const rank = rankChar(card);
   const sym = SUIT_SYMBOL[suit];
 
@@ -48,16 +45,17 @@ export function PlayingCard({
       aria-label={`${rank} of ${suit}`}
       style={{ color: ink }}
     >
-      {/* Soft center watermark */}
-      <span
-        className={`absolute right-1 bottom-0.5 ${s.watermark} leading-none opacity-15 select-none`}
-      >
-        {sym}
-      </span>
-      {/* Top-left index: rank over suit */}
+      {/* Colored center pip */}
+      <span className={`absolute inset-0 grid place-items-center ${s.pip} leading-none`}>{sym}</span>
+      {/* Top-left index: royal rank over colored suit */}
       <div className="absolute top-1 left-1.5 flex flex-col items-center leading-none">
-        <span className={`font-semibold ${s.rank} tracking-tight`}>{rank}</span>
-        <span className={`${s.suit} -mt-px`}>{sym}</span>
+        <span
+          className={`font-semibold ${s.rank} tracking-tight`}
+          style={{ fontFamily: "var(--font-card), Georgia, serif" }}
+        >
+          {rank}
+        </span>
+        <span className={`${s.corner} -mt-px`}>{sym}</span>
       </div>
     </div>
   );

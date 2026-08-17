@@ -1,26 +1,238 @@
 @import "tailwindcss";
 
+/* ============================================================
+   PokerFace — "Onyx Club" design system
+   Deep onyx black · emerald felt · brushed gold accents
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Onyx / charcoal ramp */
+  --onyx-950: #07080a;
+  --onyx-900: #0b0d11;
+  --onyx-850: #101319;
+  --onyx-800: #161a22;
+  --onyx-700: #1e2430;
+  --onyx-600: #2a3140;
+  --onyx-500: #3a4354;
+
+  /* Emerald felt */
+  --felt-900: #0a2a20;
+  --felt-800: #0d3a2c;
+  --felt-700: #0f4a37;
+  --felt-600: #135c44;
+  --felt-glow: #1c7a5b;
+
+  /* Brushed gold */
+  --gold-500: #d4af37;
+  --gold-400: #e6c65c;
+  --gold-300: #f2dd93;
+  --gold-100: #fbf3d6;
+  --gold-deep: #a8842a;
+
+  /* Neutrals / text */
+  --cream: #f5efe0;
+  --parchment: #d8d2c4;
+  --muted: #8b8778;
+  --muted-dim: #5e5b52;
+
+  /* Semantic */
+  --win: #4ade80;
+  --danger: #e5484d;
+  --chip-blue: #2f6fed;
+  --chip-red: #d13b3b;
+  --chip-green: #1f9d57;
+  --chip-black: #14161c;
+
+  --background: var(--onyx-950);
+  --foreground: var(--cream);
+
+  --radius: 14px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-onyx-950: var(--onyx-950);
+  --color-onyx-900: var(--onyx-900);
+  --color-onyx-850: var(--onyx-850);
+  --color-onyx-800: var(--onyx-800);
+  --color-onyx-700: var(--onyx-700);
+  --color-onyx-600: var(--onyx-600);
+  --color-onyx-500: var(--onyx-500);
+
+  --color-felt-900: var(--felt-900);
+  --color-felt-800: var(--felt-800);
+  --color-felt-700: var(--felt-700);
+  --color-felt-600: var(--felt-600);
+  --color-felt-glow: var(--felt-glow);
+
+  --color-gold-500: var(--gold-500);
+  --color-gold-400: var(--gold-400);
+  --color-gold-300: var(--gold-300);
+  --color-gold-100: var(--gold-100);
+  --color-gold-deep: var(--gold-deep);
+
+  --color-cream: var(--cream);
+  --color-parchment: var(--parchment);
+  --color-muted: var(--muted);
+  --color-win: var(--win);
+  --color-danger: var(--danger);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: color-mix(in srgb, var(--gold-500) 12%, transparent);
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--onyx-950);
+  color: var(--cream);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ambient onyx backdrop with warm center light */
+.onyx-backdrop {
+  background:
+    radial-gradient(120% 80% at 50% -10%, color-mix(in srgb, var(--gold-500) 8%, transparent), transparent 55%),
+    radial-gradient(90% 70% at 50% 120%, color-mix(in srgb, var(--felt-glow) 14%, transparent), transparent 60%),
+    var(--onyx-950);
+}
+
+/* Brushed-gold text */
+.text-gilt {
+  background: linear-gradient(180deg, var(--gold-300) 0%, var(--gold-500) 45%, var(--gold-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gold hairline / border glow */
+.ring-gilt {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gold-500) 45%, transparent),
+    0 0 24px -6px color-mix(in srgb, var(--gold-500) 40%, transparent);
+}
+
+/* Glassmorphic panel */
+.glass {
+  background: color-mix(in srgb, var(--onyx-800) 72%, transparent);
+  backdrop-filter: blur(14px) saturate(120%);
+  border: 1px solid color-mix(in srgb, var(--gold-500) 14%, transparent);
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, white 6%, transparent) inset,
+    0 20px 50px -24px rgba(0, 0, 0, 0.8);
+}
+
+.glass-strong {
+  background: color-mix(in srgb, var(--onyx-850) 88%, transparent);
+  backdrop-filter: blur(18px) saturate(130%);
+  border: 1px solid color-mix(in srgb, var(--gold-500) 20%, transparent);
+}
+
+/* Emerald felt surface */
+.felt {
+  background:
+    radial-gradient(120% 120% at 50% 30%, var(--felt-600) 0%, var(--felt-700) 38%, var(--felt-800) 68%, var(--felt-900) 100%);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--gold-500) 30%, transparent),
+    0 0 0 14px var(--onyx-850),
+    0 0 0 15px color-mix(in srgb, var(--gold-500) 22%, transparent),
+    0 40px 120px -30px rgba(0, 0, 0, 0.9),
+    inset 0 2px 40px -10px color-mix(in srgb, var(--felt-glow) 60%, transparent);
+}
+
+.felt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(60% 55% at 50% 42%, color-mix(in srgb, var(--felt-glow) 30%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+/* Gold CTA button */
+.btn-gold {
+  background: linear-gradient(180deg, var(--gold-300), var(--gold-500) 55%, var(--gold-deep));
+  color: var(--onyx-950);
+  font-weight: 600;
+  border: 1px solid color-mix(in srgb, var(--gold-100) 60%, transparent);
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, white 55%, transparent) inset,
+    0 10px 30px -10px color-mix(in srgb, var(--gold-500) 55%, transparent);
+  transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+.btn-gold:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, white 65%, transparent) inset,
+    0 14px 40px -10px color-mix(in srgb, var(--gold-500) 70%, transparent);
+}
+.btn-gold:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+/* Ghost / outline button */
+.btn-ghost {
+  background: color-mix(in srgb, var(--onyx-700) 60%, transparent);
+  color: var(--cream);
+  border: 1px solid color-mix(in srgb, var(--gold-500) 28%, transparent);
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+}
+.btn-ghost:hover {
+  background: color-mix(in srgb, var(--onyx-600) 70%, transparent);
+  border-color: color-mix(in srgb, var(--gold-500) 55%, transparent);
+}
+.btn-ghost:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+/* Playing-card face */
+.playing-card {
+  background: linear-gradient(160deg, #ffffff, #f1ece1);
+  color: var(--onyx-950);
+  border-radius: 9px;
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.9) inset,
+    0 8px 18px -8px rgba(0, 0, 0, 0.75);
+}
+
+/* Card back */
+.card-back {
+  background:
+    repeating-linear-gradient(45deg, var(--felt-800) 0 6px, var(--felt-700) 6px 12px);
+  border: 2px solid color-mix(in srgb, var(--gold-500) 45%, transparent);
+  border-radius: 9px;
+  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.8);
+}
+
+/* Active-seat pulse ring */
+@keyframes seat-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold-500) 60%, transparent), 0 0 22px -4px color-mix(in srgb, var(--gold-500) 55%, transparent); }
+  50% { box-shadow: 0 0 0 2px var(--gold-400), 0 0 34px -2px color-mix(in srgb, var(--gold-400) 80%, transparent); }
+}
+.seat-active {
+  animation: seat-pulse 1.6s ease-in-out infinite;
+}
+
+/* Subtle rise-in */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise-in {
+  animation: rise-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Thin scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--onyx-900); }
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--gold-500) 22%, var(--onyx-600));
+  border-radius: 6px;
 }

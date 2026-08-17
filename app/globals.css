@@ -47,6 +47,10 @@
   --foreground: var(--cream);
 
   --radius: 14px;
+
+  /* Motion tokens (Emil Kowalski curves) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @theme inline {
@@ -226,7 +230,23 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 .rise-in {
-  animation: rise-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: rise-in 0.5s var(--ease-out) both;
+}
+
+/* Respect reduced motion: keep fades, drop transform-based movement. */
+@media (prefers-reduced-motion: reduce) {
+  .rise-in {
+    animation: none;
+  }
+  .seat-active {
+    animation: none;
+    box-shadow: 0 0 0 1px var(--gold-400);
+  }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Thin scrollbars */

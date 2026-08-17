@@ -1,9 +1,11 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import type { Card } from "@/lib/engine/types";
 import { formatChips } from "@/lib/game/view";
 import { PlayingCard } from "./PlayingCard";
+
+const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
 export function CommunityBoard({
   board,
@@ -12,6 +14,7 @@ export function CommunityBoard({
   board: Card[];
   pot: number;
 }) {
+  const reduce = useReducedMotion();
   return (
     <div className="flex flex-col items-center gap-2 sm:gap-3">
       <div className="text-center">
@@ -27,10 +30,10 @@ export function CommunityBoard({
           const card = board[i];
           return card ? (
             <motion.div
-              key={i}
-              initial={{ opacity: 0, y: -14, rotateY: 90 }}
-              animate={{ opacity: 1, y: 0, rotateY: 0 }}
-              transition={{ delay: i * 0.08, duration: 0.4 }}
+              key={card}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, transform: "translateY(-10px) scale(0.94)" }}
+              animate={{ opacity: 1, transform: "translateY(0px) scale(1)" }}
+              transition={{ delay: reduce ? 0 : i * 0.045, duration: 0.28, ease: EASE_OUT }}
             >
               <PlayingCard card={card} size="md" />
             </motion.div>

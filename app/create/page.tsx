@@ -16,7 +16,7 @@ const STAKES = [
   { sb: 100, bb: 200 },
 ];
 const STACKS = [1000, 2500, 5000, 10000];
-const TIMERS = [15, 30, 45, 60];
+const TIMERS = [15, 20, 30, 45, 60];
 
 export default function CreatePage() {
   const router = useRouter();
@@ -26,8 +26,11 @@ export default function CreatePage() {
   const [stakeIdx, setStakeIdx] = useState<number | "custom">(1);
   const [customSb, setCustomSb] = useState(1);
   const [customBb, setCustomBb] = useState(2);
-  const [stack, setStack] = useState(2500);
+  const [stackSel, setStackSel] = useState<number | "custom">(2500);
+  const [customStack, setCustomStack] = useState(2500);
   const [timer, setTimer] = useState(30);
+
+  const stack = stackSel === "custom" ? Math.max(1, customStack) : stackSel;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -154,20 +157,35 @@ export default function CreatePage() {
             </Field>
 
             <Field label="Starting stack">
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                 {STACKS.map((s) => (
-                  <Chip key={s} active={s === stack} onClick={() => setStack(s)}>
+                  <Chip key={s} active={s === stackSel} onClick={() => setStackSel(s)}>
                     {formatChips(s)}
                   </Chip>
                 ))}
+                <Chip active={stackSel === "custom"} onClick={() => setStackSel("custom")}>
+                  Custom
+                </Chip>
               </div>
+              {stackSel === "custom" && (
+                <label className="glass rounded-lg px-3 py-2 flex items-center gap-2 mt-2">
+                  <span className="text-[10px] uppercase tracking-widest text-muted">Chips</span>
+                  <input
+                    type="number"
+                    min={1}
+                    value={customStack}
+                    onChange={(e) => setCustomStack(Number(e.target.value))}
+                    className="w-full bg-transparent text-cream tabular-nums outline-none text-right"
+                  />
+                </label>
+              )}
               <div className="text-[11px] text-muted mt-1.5">
                 {(stack / stake.bb).toFixed(0)} big blinds
               </div>
             </Field>
 
             <Field label="Action timer">
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                 {TIMERS.map((t) => (
                   <Chip key={t} active={t === timer} onClick={() => setTimer(t)}>
                     {t}s

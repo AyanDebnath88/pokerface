@@ -25,9 +25,9 @@ export function SeatPod({
 }) {
   if (!seat.playerId) {
     return (
-      <div className="glass rounded-2xl px-4 py-3 w-36 text-center opacity-60">
-        <span className="text-xs tracking-widest text-muted uppercase">
-          Open seat
+      <div className="glass rounded-2xl px-2 py-2.5 sm:px-4 sm:py-3 w-24 sm:w-36 text-center opacity-60">
+        <span className="text-[10px] sm:text-xs tracking-widest text-muted uppercase">
+          Open
         </span>
       </div>
     );
@@ -59,22 +59,22 @@ export function SeatPod({
       </div>
 
       <div
-        className={`glass-strong rounded-2xl pt-3 pb-2 px-3 w-36 text-center ${
+        className={`glass-strong rounded-2xl pt-2.5 pb-1.5 px-2 sm:pt-3 sm:pb-2 sm:px-3 w-24 sm:w-36 text-center ${
           active ? "seat-active" : vipRing
         } ${seat.folded ? "opacity-50" : ""}`}
       >
-        <div className="flex items-center gap-2 justify-center">
+        <div className="flex items-center gap-1.5 sm:gap-2 justify-center">
           <div
-            className="w-8 h-8 rounded-full grid place-items-center text-xs font-semibold text-onyx-950"
+            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full grid place-items-center text-[10px] sm:text-xs font-semibold text-onyx-950 shrink-0"
             style={{ background: seat.avatarColor ?? "var(--gold-400)" }}
           >
             {initials(seat.name)}
           </div>
-          <div className="text-left leading-tight">
-            <div className="text-sm font-medium text-cream truncate max-w-[5.5rem]">
+          <div className="text-left leading-tight min-w-0">
+            <div className="text-xs sm:text-sm font-medium text-cream truncate max-w-[3.5rem] sm:max-w-[5.5rem]">
               {seat.name}
             </div>
-            <div className="text-xs text-gold-300 tabular-nums">
+            <div className="text-[10px] sm:text-xs text-gold-300 tabular-nums">
               {formatChips(seat.stack)}
             </div>
           </div>

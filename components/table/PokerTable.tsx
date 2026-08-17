@@ -37,14 +37,14 @@ export function PokerTable({
   const positions = seatPositions(view.seats.length);
 
   return (
-    <div className="w-full px-16 sm:px-24">
-      <div className="relative w-full max-w-5xl mx-auto aspect-[16/12]">
+    <div className="w-full px-8 sm:px-20 lg:px-24">
+      <div className="relative w-full max-w-5xl mx-auto aspect-[10/11] sm:aspect-[16/12]">
         {/* Felt */}
         <div className="felt absolute inset-[13%] rounded-[46%] overflow-hidden">
         </div>
 
-        {/* Table meta — centered in the empty top band */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-[26%] z-10">
+        {/* Table meta — centered in the empty top band (desktop only) */}
+        <div className="hidden sm:block absolute left-1/2 -translate-x-1/2 top-[26%] z-10">
           <div className="glass rounded-full px-4 py-1.5 text-xs text-parchment flex items-center gap-2">
             <span className="text-gold-300 font-medium">
               {VARIANT_LABEL[view.variant]}

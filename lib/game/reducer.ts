@@ -146,6 +146,7 @@ export function act(
   const before = rehydrate(publicHand, deck, holeByPlayer);
   const prevBoardLen = before.board.length;
   const prevStreet = before.street;
+  const callAmount = getLegalActions(before).callAmount;
 
   const after = applyAction(before, actorUserId, action);
 
@@ -154,7 +155,12 @@ export function act(
       kind: "action",
       userId: actorUserId,
       type: action.type,
-      amount: "to" in action ? action.to : undefined,
+      amount:
+        action.type === "call"
+          ? callAmount
+          : "to" in action
+            ? action.to
+            : undefined,
       street: prevStreet,
     },
   ];

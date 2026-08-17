@@ -84,9 +84,8 @@ async function writeEvents(
 ) {
   if (events.length === 0) return;
   const svc = createServiceClient();
-  const base = Date.now();
   const rows = events.map((e, i) => {
-    const common = { game_id: gameId, hand_id: handId, hand_no: handNo, seq: base + i };
+    const common = { game_id: gameId, hand_id: handId, hand_no: handNo, seq: i };
     switch (e.kind) {
       case "blind":
         return { ...common, user_id: e.userId, name: names[e.userId], type: "blind", amount: e.amount, detail: { blind: e.blind } };
@@ -102,7 +101,8 @@ async function writeEvents(
         return { ...common, user_id: e.userId, name: names[e.userId], type: "uncalled", amount: e.amount };
     }
   });
-  await svc.from("hand_actions").insert(rows);
+  const { error } = await svc.from("hand_actions").insert(rows);
+  if (error) console.error("writeEvents insert failed:", error.message);
 }
 
 /** Optimistic-concurrency commit of new public state. Throws on conflict. */

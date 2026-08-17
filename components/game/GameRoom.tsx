@@ -150,7 +150,7 @@ export function GameRoom({ code }: { code: string }) {
         ]);
 
         channel = supabase
-          .channel(`game:${g.id}`)
+          .channel(`game:${g.id}:${Math.random().toString(36).slice(2)}`)
           .on("postgres_changes", { event: "*", schema: "public", table: "games", filter: `id=eq.${g.id}` }, async () => {
             const ng = await fetchGame();
             if (ng) await fetchHole(ng.current_hand_id);

@@ -149,7 +149,7 @@ export default function DemoPage() {
   const view = mode === "action" ? demoView : showdownView;
 
   return (
-    <main className="flex-1 flex flex-col">
+    <main className="flex-1 flex flex-col poker-room">
       <header className="w-full max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
         <Link href="/" className="font-display text-lg tracking-wide text-gilt">
           PokerFace

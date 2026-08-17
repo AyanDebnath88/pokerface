@@ -5,11 +5,11 @@ type Size = "sm" | "md" | "lg";
 
 const SIZES: Record<
   Size,
-  { box: string; index: string; suit: string; pip: string; corner: boolean }
+  { box: string; rank: string; suit: string; watermark: string }
 > = {
-  sm: { box: "w-8 h-11 rounded-[5px]", index: "text-[11px]", suit: "text-[8px]", pip: "text-base", corner: false },
-  md: { box: "w-12 h-[4.2rem] rounded-lg", index: "text-base", suit: "text-[11px]", pip: "text-3xl", corner: true },
-  lg: { box: "w-16 h-24 rounded-xl", index: "text-xl", suit: "text-sm", pip: "text-5xl", corner: true },
+  sm: { box: "w-8 h-11 rounded-md", rank: "text-sm", suit: "text-[9px]", watermark: "text-lg" },
+  md: { box: "w-11 h-16 rounded-lg", rank: "text-xl", suit: "text-xs", watermark: "text-3xl" },
+  lg: { box: "w-16 h-24 rounded-xl", rank: "text-3xl", suit: "text-base", watermark: "text-5xl" },
 };
 
 export function PlayingCard({
@@ -28,9 +28,9 @@ export function PlayingCard({
   if (faceDown || !card) {
     return (
       <div className={`card-back ${s.box} shrink-0 relative overflow-hidden`} aria-label="face-down card">
-        <div className="absolute inset-1 rounded-[3px] border border-gold-500/25" />
+        <div className="absolute inset-[3px] rounded-[4px] border border-gold-500/20" />
         <div className="absolute inset-0 grid place-items-center">
-          <span className="font-display text-gold-500/40 text-xs leading-none">♠</span>
+          <span className="font-display text-gold-500/35 text-sm leading-none">♠</span>
         </div>
       </div>
     );
@@ -38,36 +38,27 @@ export function PlayingCard({
 
   const suit = suitOf(card);
   const red = SUIT_IS_RED[suit];
-  const color = red ? "text-[#c8323c]" : "text-[#16181f]";
+  const ink = red ? "#c02b38" : "#1a1c22";
   const rank = rankChar(card);
   const sym = SUIT_SYMBOL[suit];
-
-  const Index = ({ rotated = false }: { rotated?: boolean }) => (
-    <div className={`flex flex-col items-center leading-none ${color} ${rotated ? "rotate-180" : ""}`}>
-      <span className={`font-semibold ${s.index} tracking-tight`}>{rank}</span>
-      <span className={`${s.suit} -mt-0.5`}>{sym}</span>
-    </div>
-  );
 
   return (
     <div
       className={`playing-card ${s.box} shrink-0 relative overflow-hidden ${dimmed ? "opacity-45 saturate-50" : ""}`}
       aria-label={`${rank} of ${suit}`}
+      style={{ color: ink }}
     >
-      {/* Center pip */}
-      <div className={`absolute inset-0 grid place-items-center ${color} opacity-90`}>
-        <span className={`${s.pip} leading-none`}>{sym}</span>
+      {/* Soft center watermark */}
+      <span
+        className={`absolute right-1 bottom-0.5 ${s.watermark} leading-none opacity-15 select-none`}
+      >
+        {sym}
+      </span>
+      {/* Top-left index: rank over suit */}
+      <div className="absolute top-1 left-1.5 flex flex-col items-center leading-none">
+        <span className={`font-semibold ${s.rank} tracking-tight`}>{rank}</span>
+        <span className={`${s.suit} -mt-px`}>{sym}</span>
       </div>
-      {/* Top-left index */}
-      <div className="absolute top-1 left-1">
-        <Index />
-      </div>
-      {/* Bottom-right mirrored index (larger cards only) */}
-      {s.corner && (
-        <div className="absolute bottom-1 right-1">
-          <Index rotated />
-        </div>
-      )}
     </div>
   );
 }

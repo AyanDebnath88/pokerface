@@ -292,7 +292,7 @@ export function GameRoom({ code }: { code: string }) {
   }
 
   return (
-    <main className="flex-1 flex flex-col lg:flex-row min-h-0">
+    <main className="flex-1 flex flex-col lg:flex-row min-h-0 poker-room">
       {/* Left: table */}
       <div className="flex-1 flex flex-col min-h-0">
         <RoomHeader code={code} name={game.name} status={game.status} isHost={isHost} onPause={() => setPaused({ code, paused: game.status !== "paused" })} />
@@ -323,9 +323,11 @@ export function GameRoom({ code }: { code: string }) {
                 <ActionBar legal={legal} bigBlind={view.bigBlind} onAction={doAct} />
               </div>
             ) : canDeal ? (
-              <button onClick={() => startNextHand({ code })} className="btn-gold rounded-xl px-8 py-4 w-full">
-                {game.hand_no === 0 ? "Deal first hand" : "Deal next hand"}
-              </button>
+              <div className="flex justify-center">
+                <button onClick={() => startNextHand({ code })} className="btn-gold rounded-full px-10 py-3">
+                  {game.hand_no === 0 ? "Deal first hand" : "Deal next hand"}
+                </button>
+              </div>
             ) : (
               <div className="text-center text-sm text-muted">
                 {seatedCount < 2 ? "Waiting for players to sit down…" : "Waiting for the next action…"}

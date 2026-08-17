@@ -95,12 +95,13 @@ export function SeatPod({
         ) : null}
       </div>
 
-      {/* Winnings badge */}
+      {/* Winnings badge — above the pod so it never collides with controls */}
       {seat.won ? (
         <motion.div
-          initial={{ opacity: 0, y: 6, scale: 0.8 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 btn-gold rounded-full px-2.5 py-0.5 text-[11px] font-semibold tabular-nums whitespace-nowrap"
+          initial={{ opacity: 0, transform: "translateY(6px) scale(0.85)" }}
+          animate={{ opacity: 1, transform: "translateY(0px) scale(1)" }}
+          transition={{ duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
+          className="absolute -top-3 -right-1 z-40 btn-gold rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums whitespace-nowrap"
         >
           +{seat.won.toLocaleString("en-US")}
         </motion.div>

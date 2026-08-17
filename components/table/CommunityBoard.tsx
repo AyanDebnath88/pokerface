@@ -21,7 +21,7 @@ export function CommunityBoard({
       <div className="rounded-full px-5 py-1.5 bg-black/35 backdrop-blur-sm border border-gold-500/20 flex items-center gap-2">
         <span className="text-[10px] uppercase tracking-[0.25em] text-gold-300/70">Pot</span>
         <span className="font-display text-lg text-gilt tabular-nums leading-none">
-          {pot > 0 ? formatChips(pot) : "0"}
+          {pot > 0 ? formatChips(pot) : "—"}
         </span>
       </div>
 

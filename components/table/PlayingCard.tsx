@@ -4,9 +4,9 @@ import type { Card } from "@/lib/engine/types";
 type Size = "sm" | "md" | "lg";
 
 const SIZES: Record<Size, { box: string; rank: string; suit: string; pad: string }> = {
-  sm: { box: "w-9 h-[3.1rem] rounded-[6px]", rank: "text-lg", suit: "text-base", pad: "top-0.5 left-1" },
-  md: { box: "w-12 h-[4.4rem] rounded-lg", rank: "text-2xl", suit: "text-2xl", pad: "top-1 left-1.5" },
-  lg: { box: "w-[4.6rem] h-[6.4rem] rounded-xl", rank: "text-4xl", suit: "text-4xl", pad: "top-1.5 left-2" },
+  sm: { box: "w-9 h-[3.1rem] rounded-[6px]", rank: "text-base", suit: "text-2xl", pad: "top-0.5 left-1" },
+  md: { box: "w-12 h-[4.4rem] rounded-lg", rank: "text-xl", suit: "text-[2.1rem]", pad: "top-0.5 left-1.5" },
+  lg: { box: "w-[4.6rem] h-[6.4rem] rounded-xl", rank: "text-3xl", suit: "text-[3.4rem]", pad: "top-1 left-2" },
 };
 
 export function PlayingCard({

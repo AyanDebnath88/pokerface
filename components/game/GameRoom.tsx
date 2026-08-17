@@ -195,20 +195,20 @@ export function GameRoom({ code }: { code: string }) {
     }
   }, [now, game, code]);
 
-  // ---- auto-start next hand ----------------------------------------------
+  // ---- continuous play: auto-deal until the host pauses ------------------
   useEffect(() => {
-    if (!game) return;
+    if (!game || game.status === "paused") return;
     const hand = game.state.hand;
-    const done = hand && hand.status === "complete";
+    const between = !hand || hand.status === "complete"; // lobby, or hand over
+    const seated = players.filter(
+      (p) => p.seat_index !== null && p.stack > 0 && p.status === "seated",
+    ).length;
     const key = `${game.hand_no}`;
-    if (
-      done &&
-      game.config.autoStartNextHand &&
-      autoStarted.current !== key &&
-      players.filter((p) => p.seat_index !== null && p.stack > 0 && p.status === "seated").length >= 2
-    ) {
+    if (between && seated >= 2 && autoStarted.current !== key) {
       autoStarted.current = key;
-      const delay = game.config.showdownPresentationMs ?? 4000;
+      const delay = hand && hand.status === "complete"
+        ? game.config.showdownPresentationMs ?? 4000
+        : 500; // first hand starts promptly
       const id = setTimeout(() => startNextHand({ code }).catch(() => {}), delay);
       return () => clearTimeout(id);
     }
@@ -264,10 +264,6 @@ export function GameRoom({ code }: { code: string }) {
   const seatedCount = players.filter(
     (p) => p.seat_index !== null && p.stack > 0 && p.status === "seated",
   ).length;
-  const canDeal =
-    (isHost || game.config.autoStartNextHand) &&
-    seatedCount >= 2 &&
-    (!hand || hand.status === "complete");
 
   const deadline = game.acting_deadline ? new Date(game.acting_deadline).getTime() : null;
   const secondsLeft =
@@ -302,9 +298,12 @@ export function GameRoom({ code }: { code: string }) {
           <div className="relative w-full">
             <PokerTable view={view} viewerSeatIndex={me?.seat_index ?? undefined} showAllCards={!!shownCards} />
             {game.status === "paused" && (
-              <div className="absolute inset-0 grid place-items-center pointer-events-none">
-                <div className="glass-strong rounded-xl px-6 py-3 text-gold-200 font-display text-lg">
-                  Host paused the game
+              <div className="absolute inset-0 grid place-items-center pointer-events-none z-40">
+                <div className="glass-strong rounded-2xl px-8 py-5 text-center ring-gilt">
+                  <div className="font-display text-2xl text-gilt mb-1">Game paused</div>
+                  <div className="text-xs text-parchment/70">
+                    {isHost ? "Resume from the top bar to continue." : "The host paused the game."}
+                  </div>
                 </div>
               </div>
             )}
@@ -323,15 +322,13 @@ export function GameRoom({ code }: { code: string }) {
                 )}
                 <ActionBar legal={legal} bigBlind={view.bigBlind} onAction={doAct} />
               </div>
-            ) : canDeal ? (
-              <div className="flex justify-center">
-                <button onClick={() => startNextHand({ code })} className="btn-gold rounded-full px-10 py-3">
-                  {game.hand_no === 0 ? "Deal first hand" : "Deal next hand"}
-                </button>
-              </div>
             ) : (
               <div className="text-center text-sm text-muted">
-                {seatedCount < 2 ? "Waiting for players to sit down…" : "Waiting for the next action…"}
+                {game.status === "paused"
+                  ? "Game paused"
+                  : seatedCount < 2
+                    ? "Waiting for players to sit down…"
+                    : "Next hand dealing…"}
               </div>
             )}
             {iAmSeated && game.config.allowRebuy && !myTurn && (

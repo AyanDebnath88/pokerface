@@ -51,29 +51,51 @@ export function SeatPod({
       <div className="flex gap-0.5 mb-[-8px] z-10 relative">
         {seat.holeCards && showHoleCards
           ? seat.holeCards.map((c, i) => (
-              <PlayingCard key={i} card={c} size="sm" dimmed={seat.folded} glow={won} />
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, transform: "translateY(-8px) scale(0.85)" }}
+                animate={
+                  seat.folded
+                    ? { opacity: 0.5, transform: "translateY(6px) scale(0.92) rotate(-4deg)" }
+                    : { opacity: 1, transform: "translateY(0px) scale(1) rotate(0deg)" }
+                }
+                transition={{ delay: seat.folded ? 0 : i * 0.08, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+              >
+                <PlayingCard card={c} size="sm" dimmed={seat.folded} glow={won} />
+              </motion.div>
             ))
           : Array.from({ length: cardCount }).map((_, i) => (
-              <PlayingCard key={i} faceDown size="sm" dimmed={seat.folded} />
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, transform: "translateY(-8px) scale(0.85)" }}
+                animate={
+                  seat.folded
+                    ? { opacity: 0.45, transform: "translateY(6px) scale(0.92) rotate(-4deg)" }
+                    : { opacity: 1, transform: "translateY(0px) scale(1) rotate(0deg)" }
+                }
+                transition={{ delay: seat.folded ? 0 : i * 0.08, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+              >
+                <PlayingCard faceDown size="sm" dimmed={seat.folded} />
+              </motion.div>
             ))}
         {seat.folded && (
-          <span className="absolute inset-0 grid place-items-center text-[9px] font-semibold tracking-widest text-white/70 uppercase">
+          <span className="absolute inset-0 grid place-items-center text-[9px] font-semibold tracking-widest text-white/70 uppercase pointer-events-none">
             Fold
           </span>
         )}
       </div>
 
-      {/* Live hand-strength readout (viewer only) */}
-      {seat.handRank && !seat.folded && (
-        <div className="hand-rank-pill rounded-md px-2 py-0.5 text-[9px] font-medium tracking-wide mb-[-4px] z-20 relative whitespace-nowrap">
+      {/* Live hand-strength readout (viewer only, not at win) */}
+      {seat.handRank && !seat.folded && !won && (
+        <div className="hand-rank-pill rounded-md px-1.5 py-0.5 text-[8px] font-medium tracking-wide mb-[-4px] z-20 relative whitespace-nowrap">
           {seat.handRank}
         </div>
       )}
 
       {/* Solid pod */}
       <div
-        className={`rounded-xl pt-2.5 pb-1.5 px-2.5 w-[4.75rem] sm:w-32 text-center bg-onyx-800/95 backdrop-blur-sm border ${podTone} ${
-          seat.folded ? "opacity-55" : ""
+        className={`rounded-lg pt-2 pb-1 px-2 w-[4.25rem] sm:w-[6.5rem] text-center bg-onyx-800/95 backdrop-blur-sm border ${podTone} ${
+          seat.folded ? "opacity-60" : ""
         }`}
       >
         <div className="flex items-center gap-1.5 justify-center">
@@ -93,12 +115,8 @@ export function SeatPod({
           </div>
         </div>
 
-        {won ? (
-          <div className="mt-1 text-[10px] uppercase tracking-wider text-win truncate">
-            {seat.winningHand ?? "Winner"}
-          </div>
-        ) : seat.lastAction ? (
-          <div className="mt-1 text-[10px] uppercase tracking-wider text-muted">
+        {!won && seat.lastAction ? (
+          <div className="mt-0.5 text-[9px] uppercase tracking-wider text-muted">
             {seat.allIn ? "All-in" : seat.lastAction}
           </div>
         ) : null}

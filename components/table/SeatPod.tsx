@@ -60,7 +60,11 @@ export function SeatPod({
 
       <div
         className={`glass-strong rounded-2xl pt-2.5 pb-1.5 px-2 sm:pt-3 sm:pb-2 sm:px-3 w-24 sm:w-36 text-center ${
-          active ? "seat-active" : vipRing
+          seat.won
+            ? "ring-2 ring-win/70 shadow-[0_0_30px_-6px_var(--win)]"
+            : active
+              ? "seat-active"
+              : vipRing
         } ${seat.folded ? "opacity-50" : ""}`}
       >
         <div className="flex items-center gap-1.5 sm:gap-2 justify-center">
@@ -80,12 +84,27 @@ export function SeatPod({
           </div>
         </div>
 
-        {seat.lastAction && (
+        {seat.won ? (
+          <div className="mt-1.5 text-[10px] uppercase tracking-wider text-win truncate">
+            {seat.winningHand ?? "Winner"}
+          </div>
+        ) : seat.lastAction ? (
           <div className="mt-1.5 text-[10px] uppercase tracking-wider text-muted">
             {seat.allIn ? "All-in" : seat.lastAction}
           </div>
-        )}
+        ) : null}
       </div>
+
+      {/* Winnings badge */}
+      {seat.won ? (
+        <motion.div
+          initial={{ opacity: 0, y: 6, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 btn-gold rounded-full px-2.5 py-0.5 text-[11px] font-semibold tabular-nums whitespace-nowrap"
+        >
+          +{seat.won.toLocaleString("en-US")}
+        </motion.div>
+      ) : null}
 
       {/* Dealer / blind buttons */}
       <div className="absolute -right-3 top-8 flex flex-col gap-1">

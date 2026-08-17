@@ -237,15 +237,15 @@ export function GameRoom({ code }: { code: string }) {
   }
   if (!game || !viewerId) return <Centered><Spinner /></Centered>;
 
-  const shownCards =
-    game.state.hand?.status === "complete"
-      ? game.state.lastResult?.shownCards
-      : undefined;
+  const handComplete = game.state.hand?.status === "complete";
+  const shownCards = handComplete ? game.state.lastResult?.shownCards : undefined;
 
   const view = projectTable(code, game.config, game.state, players, {
     viewerId,
     myHoleCards: myHole,
     shown: shownCards,
+    winnings: handComplete ? game.state.lastResult?.winnings : undefined,
+    shownDesc: handComplete ? game.state.lastResult?.shown : undefined,
   });
 
   const hand = game.state.hand;

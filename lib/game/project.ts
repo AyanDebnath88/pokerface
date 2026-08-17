@@ -33,6 +33,8 @@ export function projectTable(
     viewerId?: string;
     myHoleCards?: Card[];
     shown?: Record<string, Card[]>;
+    winnings?: Record<string, number>;
+    shownDesc?: Record<string, string>;
   } = {},
 ): TableView {
   const blinds = activeBlinds(config);
@@ -85,6 +87,8 @@ export function projectTable(
       isSmallBlind: sbUser ? sbUser === p.user_id : false,
       isBigBlind: false,
       vipTier: (p.vip_tier as SeatView["vipTier"]) ?? null,
+      won: opts.winnings?.[p.user_id],
+      winningHand: opts.shownDesc?.[p.user_id],
     });
   }
 

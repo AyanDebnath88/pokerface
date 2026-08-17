@@ -20,6 +20,8 @@ export interface SeatView {
   isBigBlind: boolean;
   vipTier?: "gold" | "black" | null;
   lastAction?: string;
+  won?: number; // chips won this hand (showdown highlight)
+  winningHand?: string; // e.g. "Two Pair"
 }
 
 export interface TableView {

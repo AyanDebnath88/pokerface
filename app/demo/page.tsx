@@ -32,6 +32,7 @@ const demoView: TableView = {
       isBigBlind: false,
       vipTier: "gold",
       lastAction: "Check",
+      handRank: "Two Pair (A,K)",
     },
     {
       seatIndex: 1,

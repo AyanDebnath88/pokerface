@@ -16,16 +16,17 @@ export function CommunityBoard({
 }) {
   const reduce = useReducedMotion();
   return (
-    <div className="flex flex-col items-center gap-2 sm:gap-3">
-      <div className="text-center">
-        <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.3em] text-gold-300/70">
-          Pot
-        </div>
-        <div className="font-display text-2xl sm:text-3xl text-gilt tabular-nums leading-tight">
-          {pot > 0 ? formatChips(pot) : "—"}
-        </div>
+    <div className="flex flex-col items-center gap-3 sm:gap-4">
+      {/* Pot pill */}
+      <div className="rounded-full px-5 py-1.5 bg-black/35 backdrop-blur-sm border border-gold-500/20 flex items-center gap-2">
+        <span className="text-[10px] uppercase tracking-[0.25em] text-gold-300/70">Pot</span>
+        <span className="font-display text-lg text-gilt tabular-nums leading-none">
+          {pot > 0 ? formatChips(pot) : "0"}
+        </span>
       </div>
-      <div className="flex gap-1 sm:gap-2 scale-[0.72] sm:scale-100 origin-top">
+
+      {/* Board */}
+      <div className="flex gap-1.5 scale-[0.78] sm:scale-100 origin-top">
         {Array.from({ length: 5 }).map((_, i) => {
           const card = board[i];
           return card ? (
@@ -33,14 +34,14 @@ export function CommunityBoard({
               key={card}
               initial={reduce ? { opacity: 0 } : { opacity: 0, transform: "translateY(-10px) scale(0.94)" }}
               animate={{ opacity: 1, transform: "translateY(0px) scale(1)" }}
-              transition={{ delay: reduce ? 0 : i * 0.045, duration: 0.28, ease: EASE_OUT }}
+              transition={{ delay: reduce ? 0 : i * 0.05, duration: 0.28, ease: EASE_OUT }}
             >
               <PlayingCard card={card} size="md" />
             </motion.div>
           ) : (
             <div
               key={i}
-              className="w-12 h-16 rounded-lg border border-dashed border-gold-500/20 bg-white/[0.02]"
+              className="w-12 h-[4.4rem] rounded-lg border border-dashed border-white/10 bg-white/[0.015]"
             />
           );
         })}

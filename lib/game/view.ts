@@ -22,6 +22,7 @@ export interface SeatView {
   lastAction?: string;
   won?: number; // chips won this hand (showdown highlight)
   winningHand?: string; // e.g. "Two Pair"
+  handRank?: string; // live strength readout for the viewer, e.g. "Two Pair (8,5)"
 }
 
 export interface TableView {

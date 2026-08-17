@@ -3,13 +3,10 @@ import type { Card } from "@/lib/engine/types";
 
 type Size = "sm" | "md" | "lg";
 
-const SIZES: Record<
-  Size,
-  { box: string; rank: string; suit: string; pip: string }
-> = {
-  sm: { box: "w-8 h-11 rounded-[5px]", rank: "text-[15px]", suit: "text-[9px]", pip: "text-xl" },
-  md: { box: "w-11 h-16 rounded-md", rank: "text-xl", suit: "text-xs", pip: "text-[2rem]" },
-  lg: { box: "w-16 h-24 rounded-lg", rank: "text-3xl", suit: "text-lg", pip: "text-5xl" },
+const SIZES: Record<Size, { box: string; rank: string; suit: string; pad: string }> = {
+  sm: { box: "w-9 h-[3.1rem] rounded-[6px]", rank: "text-lg", suit: "text-base", pad: "top-0.5 left-1" },
+  md: { box: "w-12 h-[4.4rem] rounded-lg", rank: "text-2xl", suit: "text-2xl", pad: "top-1 left-1.5" },
+  lg: { box: "w-[4.6rem] h-[6.4rem] rounded-xl", rank: "text-4xl", suit: "text-4xl", pad: "top-1.5 left-2" },
 };
 
 export function PlayingCard({
@@ -17,47 +14,40 @@ export function PlayingCard({
   faceDown = false,
   size = "md",
   dimmed = false,
+  glow = false,
 }: {
   card?: Card;
   faceDown?: boolean;
   size?: Size;
   dimmed?: boolean;
+  glow?: boolean;
 }) {
   const s = SIZES[size];
+  const glowCls = glow ? "ring-2 ring-win shadow-[0_0_18px_-2px_var(--win)]" : "";
 
   if (faceDown || !card) {
     return (
-      <div className={`card-back ${s.box} shrink-0 relative overflow-hidden`} aria-label="face-down card">
-        <div className="absolute inset-[3px] rounded-[4px] border border-gold-500/45" />
+      <div className={`card-back ${s.box} shrink-0 relative overflow-hidden ${glowCls}`} aria-label="face-down card">
+        <div className="absolute inset-[3px] rounded-[5px] border border-gold-500/45" />
       </div>
     );
   }
 
   const suit = suitOf(card);
   const red = SUIT_IS_RED[suit];
-  const ink = red ? "#c8102e" : "#14161c";
+  const ink = red ? "#d21f3c" : "#141619";
   const rank = rankChar(card);
   const sym = SUIT_SYMBOL[suit];
 
   return (
     <div
-      className={`playing-card ${s.box} shrink-0 relative overflow-hidden ${dimmed ? "opacity-45 saturate-50" : ""}`}
+      className={`playing-card ${s.box} shrink-0 relative overflow-hidden ${glowCls} ${dimmed ? "opacity-45 saturate-50" : ""}`}
       aria-label={`${rank} of ${suit}`}
       style={{ color: ink }}
     >
-      {/* Large colored center suit */}
-      <span className={`absolute inset-0 grid place-items-center ${s.pip} leading-none opacity-95`}>
-        {sym}
-      </span>
-      {/* Top-left index: royal rank over colored suit */}
-      <div className="absolute top-1 left-1.5 flex flex-col items-center leading-[0.85]">
-        <span
-          className={`font-semibold ${s.rank} tracking-tight`}
-          style={{ fontFamily: "var(--font-display), Georgia, serif" }}
-        >
-          {rank}
-        </span>
-        <span className={s.suit}>{sym}</span>
+      <div className={`absolute ${s.pad} flex flex-col items-center leading-[0.82] font-sans`}>
+        <span className={`font-bold ${s.rank} tracking-tighter`}>{rank}</span>
+        <span className={`${s.suit} -mt-0.5 leading-none`}>{sym}</span>
       </div>
     </div>
   );

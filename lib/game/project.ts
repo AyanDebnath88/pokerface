@@ -4,6 +4,7 @@ import { activeBlinds } from "./config";
 import type { SeatView, TableView } from "./view";
 import type { SeatState } from "@/lib/engine/betting";
 import type { Card } from "@/lib/engine/types";
+import { describeHand } from "./handLabel";
 
 export interface PlayerRow {
   user_id: string;
@@ -89,6 +90,10 @@ export function projectTable(
       vipTier: (p.vip_tier as SeatView["vipTier"]) ?? null,
       won: opts.winnings?.[p.user_id],
       winningHand: opts.shownDesc?.[p.user_id],
+      handRank:
+        hand && opts.viewerId === p.user_id && holeCards
+          ? describeHand(config.variant, holeCards, hand.board) ?? undefined
+          : undefined,
     });
   }
 

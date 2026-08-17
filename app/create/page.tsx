@@ -23,13 +23,18 @@ export default function CreatePage() {
   const [name, setName] = useState("");
   const [hostName, setHostName] = useState("");
   const [variant, setVariant] = useState<GameVariant>("nlhe");
-  const [stakeIdx, setStakeIdx] = useState(1);
+  const [stakeIdx, setStakeIdx] = useState<number | "custom">(1);
+  const [customSb, setCustomSb] = useState(1);
+  const [customBb, setCustomBb] = useState(2);
   const [stack, setStack] = useState(2500);
   const [timer, setTimer] = useState(30);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const stake = STAKES[stakeIdx];
+  const stake =
+    stakeIdx === "custom"
+      ? { sb: Math.max(1, customSb), bb: Math.max(2, customBb) }
+      : STAKES[stakeIdx];
 
   async function create() {
     if (!hostName.trim()) {
@@ -108,7 +113,7 @@ export default function CreatePage() {
             </Field>
 
             <Field label="Blinds">
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                 {STAKES.map((s, i) => (
                   <Chip
                     key={i}
@@ -118,7 +123,34 @@ export default function CreatePage() {
                     {s.sb}/{s.bb}
                   </Chip>
                 ))}
+                <Chip active={stakeIdx === "custom"} onClick={() => setStakeIdx("custom")}>
+                  Custom
+                </Chip>
               </div>
+              {stakeIdx === "custom" && (
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <label className="glass rounded-lg px-3 py-2 flex items-center gap-2">
+                    <span className="text-[10px] uppercase tracking-widest text-muted">SB</span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={customSb}
+                      onChange={(e) => setCustomSb(Number(e.target.value))}
+                      className="w-full bg-transparent text-cream tabular-nums outline-none text-right"
+                    />
+                  </label>
+                  <label className="glass rounded-lg px-3 py-2 flex items-center gap-2">
+                    <span className="text-[10px] uppercase tracking-widest text-muted">BB</span>
+                    <input
+                      type="number"
+                      min={2}
+                      value={customBb}
+                      onChange={(e) => setCustomBb(Number(e.target.value))}
+                      className="w-full bg-transparent text-cream tabular-nums outline-none text-right"
+                    />
+                  </label>
+                </div>
+              )}
             </Field>
 
             <Field label="Starting stack">

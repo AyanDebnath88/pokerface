@@ -25,8 +25,8 @@ export function SeatPod({
 }) {
   if (!seat.playerId) {
     return (
-      <div className="glass rounded-2xl px-2 py-2.5 sm:px-4 sm:py-3 w-24 sm:w-36 text-center opacity-60">
-        <span className="text-[10px] sm:text-xs tracking-widest text-muted uppercase">
+      <div className="glass rounded-xl px-2 py-2.5 w-[4.75rem] sm:w-28 text-center opacity-50">
+        <span className="text-[9px] sm:text-[10px] tracking-widest text-muted uppercase">
           Open
         </span>
       </div>
@@ -59,26 +59,26 @@ export function SeatPod({
       </div>
 
       <div
-        className={`glass-strong rounded-2xl pt-2.5 pb-1.5 px-2 sm:pt-3 sm:pb-2 sm:px-3 w-24 sm:w-36 text-center ${
+        className={`glass-strong rounded-xl py-1.5 px-2 sm:px-2.5 w-[4.75rem] sm:w-28 text-center ${
           seat.won
-            ? "ring-2 ring-win/70 shadow-[0_0_30px_-6px_var(--win)]"
+            ? "ring-2 ring-win/70 shadow-[0_0_26px_-6px_var(--win)]"
             : active
               ? "seat-active"
               : vipRing
         } ${seat.folded ? "opacity-50" : ""}`}
       >
-        <div className="flex items-center gap-1.5 sm:gap-2 justify-center">
+        <div className="flex items-center gap-1.5 justify-center">
           <div
-            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full grid place-items-center text-[10px] sm:text-xs font-semibold text-onyx-950 shrink-0"
+            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full grid place-items-center text-[9px] sm:text-[10px] font-semibold text-onyx-950 shrink-0"
             style={{ background: seat.avatarColor ?? "var(--gold-400)" }}
           >
             {initials(seat.name)}
           </div>
           <div className="text-left leading-tight min-w-0">
-            <div className="text-xs sm:text-sm font-medium text-cream truncate max-w-[3.5rem] sm:max-w-[5.5rem]">
+            <div className="text-[11px] sm:text-xs font-medium text-cream truncate max-w-[2.75rem] sm:max-w-[4.25rem]">
               {seat.name}
             </div>
-            <div className="text-[10px] sm:text-xs text-gold-300 tabular-nums">
+            <div className="text-[10px] sm:text-[11px] text-gold-300 tabular-nums leading-tight">
               {formatChips(seat.stack)}
             </div>
           </div>
@@ -107,7 +107,7 @@ export function SeatPod({
       ) : null}
 
       {/* Dealer / blind buttons */}
-      <div className="absolute -right-3 top-8 flex flex-col gap-1">
+      <div className="absolute -right-2 top-6 flex flex-col gap-0.5">
         {seat.isDealer && <Marker label="D" tone="gold" />}
         {seat.isSmallBlind && <Marker label="SB" tone="dark" />}
         {seat.isBigBlind && <Marker label="BB" tone="dark" />}

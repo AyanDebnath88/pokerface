@@ -173,6 +173,43 @@ describe("all-in short stack producing a side pot", () => {
   });
 });
 
+describe("antes", () => {
+  it("posts an ante from every player into the pot without affecting the call", () => {
+    const s = startHand(baseConfig({ ante: 2 }));
+    // a = UTG (ante only), b = SB (ante + 5), c = BB (ante + 10).
+    expect(stackOf(s, "a")).toBe(998);
+    expect(stackOf(s, "b")).toBe(993);
+    expect(stackOf(s, "c")).toBe(988);
+    // Antes don't count toward the current bet.
+    expect(s.currentBet).toBe(10);
+    const la = getLegalActions(s);
+    expect(la.callAmount).toBe(10);
+    expect(actor(s)).toBe("a");
+  });
+
+  it("adds antes to the pot at showdown and conserves chips", () => {
+    let s = startHand(baseConfig({ ante: 2 }));
+    s = applyAction(s, "a", { type: "fold" });
+    s = applyAction(s, "b", { type: "fold" });
+    // c wins SB+BB+3 antes = 5 + 10 + 6 = 21.
+    expect(stackOf(s, "c")).toBe(1009);
+    expect(stackOf(s, "a") + stackOf(s, "b") + stackOf(s, "c")).toBe(3000);
+  });
+});
+
+describe("UTG straddle", () => {
+  it("posts a 2x BB straddle and moves first action to its left", () => {
+    const s = startHand(baseConfig({ straddle: true }));
+    // button a(0); SB b(1)=5; BB c(2)=10; straddle a(0)=20; first to act b(1).
+    expect(stackOf(s, "a")).toBe(980);
+    expect(stackOf(s, "b")).toBe(995);
+    expect(stackOf(s, "c")).toBe(990);
+    expect(s.currentBet).toBe(20);
+    expect(actor(s)).toBe("b");
+    expect(getLegalActions(s).callAmount).toBe(15);
+  });
+});
+
 describe("pot-limit Omaha betting cap", () => {
   it("caps a pot-sized raise correctly preflop", () => {
     const s = startHand(

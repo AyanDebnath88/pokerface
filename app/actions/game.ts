@@ -293,6 +293,42 @@ export async function sitDown(input: {
   return { ok: true };
 }
 
+export async function rebuy(input: { code: string; amount: number }) {
+  const user = await requireUser();
+  const svc = createServiceClient();
+  const game = await loadGame(input.code);
+  if (!game.config.allowRebuy) throw new Error("Rebuys are disabled");
+  if (input.amount <= 0) throw new Error("Invalid amount");
+
+  const { data: me } = await svc
+    .from("game_players")
+    .select("stack,buy_in_total,seat_index,status")
+    .eq("game_id", game.id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!me) throw new Error("Join the table first");
+
+  // Don't change a stack that's live in the current hand; top-ups apply
+  // between hands (PokerNow behaviour).
+  const inLiveHand =
+    game.status === "running" &&
+    game.state.hand?.status === "betting" &&
+    (game.state.seatIndexByPlayer?.[user.id] ?? null) !== null;
+  if (inLiveHand) throw new Error("Add chips between hands");
+
+  const row = me as Row;
+  await svc
+    .from("game_players")
+    .update({
+      stack: (row.stack as number) + input.amount,
+      buy_in_total: (row.buy_in_total as number) + input.amount,
+      status: row.seat_index !== null ? "seated" : (row.status as string),
+    })
+    .eq("game_id", game.id)
+    .eq("user_id", user.id);
+  return { ok: true };
+}
+
 export async function leaveSeat(input: { code: string }) {
   const user = await requireUser();
   const svc = createServiceClient();

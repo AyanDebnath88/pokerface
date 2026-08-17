@@ -12,6 +12,7 @@ import {
   ensureProfile,
   joinGame,
   sitDown,
+  rebuy,
   startNextHand,
   act,
   setPaused,
@@ -59,6 +60,7 @@ export function GameRoom({ code }: { code: string }) {
   const [chat, setChat] = useState<ChatRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [sitSeat, setSitSeat] = useState<number | null>(null);
+  const [rebuyOpen, setRebuyOpen] = useState(false);
   const [needName, setNeedName] = useState(false);
   const [now, setNow] = useState(Date.now());
   const timedOut = useRef<string | null>(null);
@@ -329,6 +331,16 @@ export function GameRoom({ code }: { code: string }) {
                 {seatedCount < 2 ? "Waiting for players to sit down…" : "Waiting for the next action…"}
               </div>
             )}
+            {iAmSeated && game.config.allowRebuy && !myTurn && (
+              <div className="text-center mt-2">
+                <button
+                  onClick={() => setRebuyOpen(true)}
+                  className="text-xs text-gold-300/80 hover:text-gold-200 underline underline-offset-2"
+                >
+                  + Add chips
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -351,6 +363,26 @@ export function GameRoom({ code }: { code: string }) {
           defaultBuyIn={game.config.startingStack}
           onConfirm={(v) => onSit(sitSeat, v)}
           onClose={() => setSitSeat(null)}
+        />
+      )}
+
+      {rebuyOpen && (
+        <SitModal
+          seat={me?.seat_index ?? 0}
+          min={view.bigBlind * 10}
+          defaultBuyIn={game.config.startingStack}
+          title="Add chips"
+          confirmVerb="Add"
+          subtitle="Top up your stack"
+          onConfirm={async (v) => {
+            try {
+              await rebuy({ code, amount: v });
+              setRebuyOpen(false);
+            } catch (e) {
+              setError(e instanceof Error ? e.message : "Could not add chips");
+            }
+          }}
+          onClose={() => setRebuyOpen(false)}
         />
       )}
 

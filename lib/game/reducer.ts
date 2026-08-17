@@ -87,6 +87,7 @@ export function dealHand(
     buttonIndex,
     smallBlind: blinds.smallBlind,
     bigBlind: blinds.bigBlind,
+    ante: blinds.ante,
     deck: shuffledDeck(),
   });
 

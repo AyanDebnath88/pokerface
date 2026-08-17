@@ -21,6 +21,10 @@ export interface HandConfig {
   buttonIndex: number; // index into players
   smallBlind: number;
   bigBlind: number;
+  /** Optional ante posted by every player into the pot before the deal. */
+  ante?: number;
+  /** UTG posts a live 2×BB straddle; action starts left of the straddle. */
+  straddle?: boolean;
   /** Optional pre-shuffled deck for deterministic tests. */
   deck?: Card[];
 }
@@ -127,6 +131,11 @@ export function startHand(config: HandConfig): HandState {
     status: "betting",
   };
 
+  // Antes (dead money — counted toward the pot, not the current bet).
+  if (config.ante && config.ante > 0) {
+    for (const seat of seats) postAnte(seat, config.ante);
+  }
+
   // Blinds. Heads-up: button is the small blind.
   const n = seats.length;
   const sbIndex =
@@ -139,15 +148,33 @@ export function startHand(config: HandConfig): HandState {
   state.currentBet = config.bigBlind;
   state.minRaise = config.bigBlind;
 
+  // Optional UTG straddle: a live 2×BB blind, first to act becomes its left.
+  let firstToActFrom = bbIndex;
+  if (config.straddle && n > 2) {
+    const straddleIdx = (bbIndex + 1) % n;
+    const straddleAmount = config.bigBlind * 2;
+    postBlind(state, straddleIdx, straddleAmount);
+    state.currentBet = straddleAmount;
+    state.minRaise = config.bigBlind;
+    firstToActFrom = straddleIdx;
+  }
+
   // Deal hole cards (2 for hold'em, 4 for Omaha).
   const holeCount = config.variant === "plo" ? 4 : 2;
   for (let r = 0; r < holeCount; r++) {
     for (const seat of seats) seat.holeCards.push(...draw(state, 1));
   }
 
-  // First to act preflop: left of the big blind (button in heads-up).
-  state.toAct = nextActor(state, bbIndex);
+  // First to act preflop: left of the big blind (or the straddle).
+  state.toAct = nextActor(state, firstToActFrom);
   return state;
+}
+
+function postAnte(seat: SeatState, amount: number) {
+  const put = Math.min(amount, seat.stack);
+  seat.stack -= put;
+  seat.totalCommitted += put; // pot only, does not count toward the call
+  if (seat.stack === 0) seat.allIn = true;
 }
 
 function postBlind(s: HandState, idx: number, amount: number) {
